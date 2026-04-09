@@ -2,34 +2,10 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Copy } from 'lucide-react';
 import { readJson, userScopedKey, writeJson } from '../../utils/storage';
 
-const normalizeState = (raw, userInfo) => {
-  const legacyLooksLikeDelivery =
-    raw &&
-    typeof raw === 'object' &&
-    ('fullName' in raw || 'phone' in raw || 'street' in raw || 'city' in raw || 'country' in raw);
-
-  const delivery = legacyLooksLikeDelivery
-    ? {
-        fullName: raw.fullName || userInfo?.name || '',
-        phone: raw.phone || '',
-        country: raw.country || '',
-        city: raw.city || '',
-        street: raw.street || '',
-        notes: raw.notes || '',
-      }
-    : {
-        fullName: raw?.delivery?.fullName || userInfo?.name || '',
-        phone: raw?.delivery?.phone || '',
-        country: raw?.delivery?.country || '',
-        city: raw?.delivery?.city || '',
-        street: raw?.delivery?.street || '',
-        notes: raw?.delivery?.notes || '',
-      };
-
+const normalizeState = (raw) => {
   return {
     destinationCountry: raw?.destinationCountry || 'Ghana',
     shippingMode: raw?.shippingMode || 'Sea',
-    delivery,
   };
 };
 
@@ -37,7 +13,7 @@ const CustomerAddress = () => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
   const storageKey = useMemo(() => userScopedKey('customerAddress', userInfo), [userInfo]);
-  const [state, setState] = useState(() => normalizeState(readJson(storageKey, null), userInfo));
+  const [state, setState] = useState(() => normalizeState(readJson(storageKey, null)));
   const [copiedKey, setCopiedKey] = useState('');
 
   useEffect(() => {
@@ -225,39 +201,6 @@ const CustomerAddress = () => {
             </div>
           );
         })}
-
-        <div className="glass-card">
-          <h3 className="heading-3" style={{ marginBottom: '1rem' }}>My Delivery Address</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="input-group">
-              <label className="input-label">Full name</label>
-              <input className="input-field" value={state.delivery.fullName} onChange={(e) => setState((p) => ({ ...p, delivery: { ...p.delivery, fullName: e.target.value } }))} />
-            </div>
-            <div className="input-group">
-              <label className="input-label">Phone</label>
-              <input className="input-field" value={state.delivery.phone} onChange={(e) => setState((p) => ({ ...p, delivery: { ...p.delivery, phone: e.target.value } }))} />
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="input-group">
-              <label className="input-label">Country</label>
-              <input className="input-field" value={state.delivery.country} onChange={(e) => setState((p) => ({ ...p, delivery: { ...p.delivery, country: e.target.value } }))} />
-            </div>
-            <div className="input-group">
-              <label className="input-label">City</label>
-              <input className="input-field" value={state.delivery.city} onChange={(e) => setState((p) => ({ ...p, delivery: { ...p.delivery, city: e.target.value } }))} />
-            </div>
-          </div>
-          <div className="input-group">
-            <label className="input-label">Street / area</label>
-            <input className="input-field" value={state.delivery.street} onChange={(e) => setState((p) => ({ ...p, delivery: { ...p.delivery, street: e.target.value } }))} />
-          </div>
-          <div className="input-group">
-            <label className="input-label">Notes</label>
-            <textarea className="input-field" rows="3" value={state.delivery.notes} onChange={(e) => setState((p) => ({ ...p, delivery: { ...p.delivery, notes: e.target.value } }))} />
-          </div>
-          <div className="text-dim" style={{ fontSize: '0.85rem' }}>Saved automatically on this device.</div>
-        </div>
       </div>
     </div>
   );
