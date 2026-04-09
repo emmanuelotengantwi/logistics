@@ -1,58 +1,62 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Search, MapPin, CheckCircle } from 'lucide-react';
 import api from '../../api/axios';
 import { useSearchParams } from 'react-router-dom';
 
-const statuses = [
-  'Pending',
-  'Received at Warehouse',
-  'Processing',
-  'In Transit',
-  'Arrived at Port',
-  'Cleared',
-  'Ready for Pickup',
-  'Delivered',
-];
+const formatDate = (value) => {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toISOString().split('T')[0];
+};
 
 const CustomerTrackShipment = () => {
   const [searchParams] = useSearchParams();
   const prefill = (searchParams.get('id') || '').trim();
 
-  const [trackingID, setTrackingID] = useState(prefill);
-  const [shipment, setShipment] = useState(null);
-  const [error, setError] = useState('');
+  const [shipments, setShipments] = useState([]);
+  const [selectedCode, setSelectedCode] = useState(prefill);
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const fetchShipments = async () => {
+    try {
+      const { data } = await api.get('/shipments');
+      setShipments(Array.isArray(data) ? data : []);
+    } catch {
+      setShipments([]);
+    }
+  };
 
   useEffect(() => {
-    if (prefill) {
-      setTrackingID(prefill);
-      // auto track
-      (async () => {
-        setError('');
-        setShipment(null);
-        setLoading(true);
-        try {
-          const { data } = await api.get(`/shipments/track/${prefill}`);
-          setShipment(data);
-        } catch (err) {
-          setError(err.response?.data?.message || 'Shipment not found');
-        } finally {
-          setLoading(false);
-        }
-      })();
-    }
+    fetchShipments();
+  }, []);
+
+  useEffect(() => {
+    if (prefill) setSelectedCode(prefill);
   }, [prefill]);
+
+  const options = useMemo(() => {
+    const list = shipments
+      .map((s) => ({
+        value: s.trackingID,
+        label: s.trackingID,
+      }))
+      .filter((o) => !!o.value);
+    return list;
+  }, [shipments]);
 
   const handleTrack = async (e) => {
     e.preventDefault();
-    const id = trackingID.trim();
-    if (!id) return;
+    const code = selectedCode.trim();
+    if (!code) return;
+
     setError('');
-    setShipment(null);
     setLoading(true);
+    setResult(null);
     try {
-      const { data } = await api.get(`/shipments/track/${id}`);
-      setShipment(data);
+      const { data } = await api.get(`/shipments/track/${encodeURIComponent(code)}`);
+      setResult(data);
     } catch (err) {
       setError(err.response?.data?.message || 'Shipment not found');
     } finally {
@@ -60,97 +64,64 @@ const CustomerTrackShipment = () => {
     }
   };
 
-  const currentIndex = useMemo(() => {
-    if (!shipment?.status) return -1;
-    return statuses.indexOf(shipment.status);
-  }, [shipment?.status]);
+  const orderStatus = result?.status || '';
+  const eta = formatDate(result?.ETA);
 
   return (
     <div className="animate-slide-up">
-      <h2 className="heading-2" style={{ marginBottom: '1.5rem' }}>Track your Shipment</h2>
+      <div className="track-page">
+        <div className="track-card glass-card">
+          <h2 className="track-title">Track your orders easily</h2>
 
-      <div className="glass-card" style={{ marginBottom: '1.5rem' }}>
-        <form onSubmit={handleTrack} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-          <input
-            type="text"
-            placeholder="Enter Tracking ID (e.g. TRK-...)"
-            className="input-field"
-            style={{ flex: 1, minWidth: 280 }}
-            value={trackingID}
-            onChange={(e) => setTrackingID(e.target.value)}
-            required
-          />
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            <Search size={18} />
-            {loading ? 'Tracking…' : 'Track'}
-          </button>
-        </form>
-        {error && <div className="text-sm" style={{ color: 'var(--status-error)', marginTop: '1rem' }}>{error}</div>}
-      </div>
-
-      {shipment && (
-        <div className="glass-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem' }}>
-            <div>
-              <div className="text-sm text-dim">Tracking ID</div>
-              <div className="heading-3">{shipment.trackingID}</div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <span className="badge badge-success">{shipment.status}</span>
-              <div className="text-sm text-dim" style={{ marginTop: '0.5rem' }}>{shipment.type} Freight</div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
-                <MapPin size={18} /> Origin
-              </div>
-              <div style={{ fontWeight: '600', color: 'var(--dark-blue)' }}>{shipment.origin}</div>
-            </div>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>
-                <MapPin size={18} /> Destination
-              </div>
-              <div style={{ fontWeight: '600', color: 'var(--dark-blue)' }}>{shipment.destination}</div>
-            </div>
-          </div>
-
-          <h3 className="heading-3" style={{ marginBottom: '1rem' }}>Tracking Progress</h3>
-          <div style={{ position: 'relative', paddingLeft: '2rem' }}>
-            <div style={{ position: 'absolute', left: '7px', top: '10px', bottom: '10px', width: '2px', background: 'var(--border-color)' }}></div>
-            {statuses.map((status, index) => {
-              const isCompleted = currentIndex >= 0 && index <= currentIndex;
-              const isCurrent = currentIndex >= 0 && index === currentIndex;
-              return (
-                <div key={status} style={{ position: 'relative', marginBottom: index === statuses.length - 1 ? 0 : '1.5rem' }}>
-                  <div
-                    style={{
-                      position: 'absolute',
-                      left: '-2rem',
-                      top: '2px',
-                      width: '16px',
-                      height: '16px',
-                      borderRadius: '50%',
-                      background: isCompleted ? 'var(--status-success)' : 'var(--bg-secondary)',
-                      border: `2px solid ${isCompleted ? 'var(--status-success)' : 'var(--border-color)'}`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 1,
-                    }}
-                  >
-                    {isCompleted && <CheckCircle size={10} color="#000" />}
-                  </div>
-                  <div style={{ color: isCurrent ? 'var(--dark-blue)' : isCompleted ? 'var(--text-secondary)' : 'var(--border-color)', fontWeight: isCurrent ? 700 : 400 }}>
-                    {status}
-                  </div>
+          <form onSubmit={handleTrack}>
+            <div className="input-group">
+              <label className="input-label" style={{ fontWeight: 700, color: 'var(--dark-blue)' }}>
+                Select Packing code <span style={{ color: 'var(--status-error)' }}>*</span>
+              </label>
+              <select
+                className="input-field"
+                value={selectedCode}
+                onChange={(e) => setSelectedCode(e.target.value)}
+                required
+              >
+                <option value="">Select code</option>
+                {options.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+              {options.length === 0 && (
+                <div className="text-dim" style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  No packing codes yet. When shipments are added, they will appear here.
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </div>
+
+            <div className="input-group">
+              <label className="input-label" style={{ fontWeight: 700, color: 'var(--dark-blue)' }}>
+                Order Status <span style={{ color: 'var(--status-error)' }}>*</span>
+              </label>
+              <input className="input-field" value={orderStatus} readOnly placeholder="" />
+            </div>
+
+            <div className="input-group" style={{ marginBottom: '2rem' }}>
+              <label className="input-label" style={{ fontWeight: 700, color: 'var(--dark-blue)' }}>
+                Estimated Delivery Date
+              </label>
+              <input className="input-field" value={eta} readOnly placeholder="" />
+            </div>
+
+            <button type="submit" className="btn btn-primary" disabled={loading} style={{ padding: '0.6rem 1.1rem' }}>
+              {loading ? 'Tracking...' : 'Track'}
+            </button>
+          </form>
+
+          {error && (
+            <div className="badge badge-error" style={{ marginTop: '1rem', display: 'inline-block' }}>
+              {error}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
