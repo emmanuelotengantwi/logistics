@@ -85,21 +85,38 @@ const loginUser = async (req, res) => {
 
 	        const user = await findUserByEmailInsensitive(email);
 
-	        if (user && (await user.matchPassword(password))) {
+	        if (!user) {
+	            return res.status(401).json({ message: 'Email not found' });
+	        }
+
+	        // Legacy support: if password is not hashed, treat it as plaintext once,
+	        // then upgrade it to a bcrypt hash on successful login.
+	        let isMatch = false;
+	        if (typeof user.password === 'string' && user.password.startsWith('$2')) {
+	            isMatch = await user.matchPassword(password);
+	        } else if (typeof user.password === 'string') {
+	            isMatch = user.password === password;
+	            if (isMatch) {
+	                user.password = password;
+	                await user.save();
+	            }
+	        }
+
+	        if (isMatch) {
 	            res.json({
 	                _id: user._id,
 	                name: user.name,
-                email: user.email,
-                role: user.role,
-                shippingMark: user.shippingMark,
-                token: generateToken(user._id)
-            });
-        } else {
-            res.status(401).json({ message: 'Invalid email or password' });
-        }
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+	                email: user.email,
+	                role: user.role,
+	                shippingMark: user.shippingMark,
+	                token: generateToken(user._id)
+	            });
+	        } else {
+	            res.status(401).json({ message: 'Incorrect password' });
+	        }
+	    } catch (error) {
+	        res.status(500).json({ message: error.message });
+	    }
 };
 
 module.exports = { registerUser, loginUser };
