@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const mongoose = require('mongoose');
 
 // @desc    Public, privacy-safe registration stats
 // @route   GET /api/public/registrations
@@ -8,6 +9,10 @@ const getRegistrations = async (req, res) => {
     const role = String(req.query.role || 'Customer');
     const includeRecent = String(req.query.includeRecent || '').toLowerCase() === 'true';
     const limit = Math.max(1, Math.min(Number(req.query.limit) || 12, 50));
+
+    if (mongoose.connection.readyState !== 1) {
+      return res.json({ total: 0, dbConnected: false });
+    }
 
     const query = role ? { role } : {};
     const total = await User.countDocuments(query);
