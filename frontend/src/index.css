@@ -327,3 +327,37 @@ body {
 }
 
 .data-table tr:last-child td { border-bottom: none; }
+
+/* Address Page */
+.notice-card {
+  max-width: 760px;
+  margin: 0 auto 1.75rem;
+  border: 1px solid var(--status-error);
+  background: rgba(239, 68, 68, 0.06);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.5rem;
+}
+
+.shipping-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border: 1px solid var(--status-error);
+  border-radius: var(--radius-sm);
+  padding: 0.1rem 0.5rem;
+  background: #fff;
+  color: var(--dark-blue);
+}
+
+.address-block {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  padding: 1rem 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  white-space: pre-wrap;
+}
