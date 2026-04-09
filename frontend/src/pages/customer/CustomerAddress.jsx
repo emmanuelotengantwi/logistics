@@ -44,19 +44,18 @@ const CustomerAddress = () => {
     writeJson(storageKey, state);
   }, [storageKey, state]);
 
-  const shippingMark = userInfo.shippingMark || 'AMOOKSCO_1480';
+  const clientName = String(userInfo?.name || 'Client Name').trim().replace(/\s+/g, ' ');
+  const shippingMark = `AMOOKSCO-${clientName}`;
 
   const destinationCountries = ['Ghana', 'Nigeria', 'Liberia', 'Sierra Leone'];
   const shippingModes = ['Sea', 'Air'];
 
   const addressCards = useMemo(() => {
-    // NOTE: Replace with your real warehouse addresses when available.
-    const commonLines = [
-      `Shipping Mark: [${shippingMark}]`,
-      'Receiver: AMOOKSCO Logistics',
-      'Phone: +86 000 0000 0000',
-      'Country: China',
-    ];
+    const seaPhones = '17612045049 / 13250714180';
+    const seaWarehouseLine = '佛山市南海区里水镇洲村深坑工业区自编23号 里德仓';
+    const seaReceiver = `收件人 AMOOKSCO - ${clientName}`;
+
+    const commonLines = [`唛头: ${shippingMark}`, `(电话): ${seaPhones}`];
 
     if (state.shippingMode === 'Air') {
       return [
@@ -82,10 +81,11 @@ const CustomerAddress = () => {
         rateLabel: 'Sea address rate',
         rateValue: '$239',
         lines: [
+          `AMOOKSCO - ${clientName} ${seaPhones}`,
+          seaWarehouseLine,
+          seaReceiver,
+          '',
           ...commonLines,
-          'Province/City: Guangdong / Foshan',
-          'Address: (Add your Foshan/Guangzhou warehouse street address here)',
-          'Postal Code: (TBD)',
         ],
       },
       {
@@ -94,14 +94,16 @@ const CustomerAddress = () => {
         rateLabel: 'Sea address rate',
         rateValue: '$260',
         lines: [
-          ...commonLines,
-          'Province/City: Zhejiang / Yiwu',
-          'Address: (Add your Yiwu warehouse street address here)',
-          'Postal Code: (TBD)',
+          `AMOOKSCO - ${clientName} (电话): (Add Yiwu phone(s))`,
+          '义乌地址: (Add your Yiwu warehouse address here)',
+          `收件人 AMOOKSCO - ${clientName}`,
+          '',
+          `唛头: ${shippingMark}`,
+          '(电话): (Add Yiwu phone(s))',
         ],
       },
     ];
-  }, [shippingMark, state.shippingMode]);
+  }, [clientName, shippingMark, state.shippingMode]);
 
   const noteText = useMemo(() => {
     const minCbm = '0.02';
@@ -139,7 +141,7 @@ const CustomerAddress = () => {
             <span className="shipping-mark">[{shippingMark}]</span>.
           </div>
           <div style={{ color: 'var(--text-secondary)' }}>
-            If you are shipping a package to us without using the exact format shown on your VITE ADDRESS, your package could experience{' '}
+            If you are shipping a package to us without using the exact format shown on your address, your package could experience{' '}
             <span style={{ color: 'var(--status-error)', fontWeight: 700 }}>delayed processing OR loss</span>. We kindly ask that you take a moment to ensure your address is in the same format as displayed.
           </div>
           <div style={{ marginTop: '0.75rem', color: 'var(--dark-blue)' }}>Min. CBM {noteText.minCbm}</div>
