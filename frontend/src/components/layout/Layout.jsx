@@ -69,11 +69,14 @@ const Layout = () => {
 	    return (
 	        <div className="app-layout">
 	            <aside className="app-sidebar" style={{ width: '260px', padding: '1.5rem 0', overflowY: 'auto' }}>
-                <div style={{ marginBottom: '2rem', padding: '0 1.5rem' }}>
-                    <h1 className="heading-2" style={{ color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <img src="/amooksco.jpeg" alt="Logo" style={{ height: '32px', borderRadius: '50%' }} />
-                        AMOOKSCO
-                    </h1>
+	                <div style={{ marginBottom: '2rem', padding: '0 1.5rem' }}>
+	                    <h1 style={{ color: 'var(--dark-blue)', display: 'flex', alignItems: 'center', gap: '0.6rem', margin: 0 }}>
+	                        <img src="/amooksco.jpeg" alt="Logo" style={{ height: '32px', borderRadius: '50%' }} />
+	                        <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.05 }}>
+	                            <span style={{ fontSize: '1.15rem', fontWeight: 800, letterSpacing: '-0.02em' }}>AMOOKSCO</span>
+	                            <span style={{ fontSize: '0.78rem', fontWeight: 800, letterSpacing: '0.18em', color: 'var(--accent-blue)' }}>LOGISTICS</span>
+	                        </span>
+	                    </h1>
 	                </div>
 
 	                <nav style={{ flex: 1 }}>
