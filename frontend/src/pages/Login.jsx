@@ -9,16 +9,16 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const { data } = await api.post('/auth/login', { email, password });
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            navigate('/dashboard');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Invalid credentials');
-        }
-    };
+	    const handleSubmit = async (e) => {
+	        e.preventDefault();
+	        try {
+	            const { data } = await api.post('/auth/login', { email: email.trim(), password });
+	            localStorage.setItem('userInfo', JSON.stringify(data));
+	            navigate('/dashboard');
+	        } catch (err) {
+	            setError(err.response?.data?.message || 'Invalid credentials');
+	        }
+	    };
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>

@@ -10,16 +10,16 @@ const Register = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            const { data } = await api.post('/auth/register', { name, email, password });
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            navigate('/dashboard');
-        } catch (err) {
-            setError(err.response?.data?.message || 'Registration failed');
-        }
-    };
+	    const handleSubmit = async (e) => {
+	        e.preventDefault();
+	        try {
+	            const { data } = await api.post('/auth/register', { name: name.trim(), email: email.trim(), password });
+	            localStorage.setItem('userInfo', JSON.stringify(data));
+	            navigate('/dashboard');
+	        } catch (err) {
+	            setError(err.response?.data?.message || 'Registration failed');
+	        }
+	    };
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
@@ -76,4 +76,3 @@ const Register = () => {
 };
 
 export default Register;
-
