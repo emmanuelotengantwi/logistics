@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 const generateToken = (id) => {
 	    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -30,6 +31,10 @@ const generateShippingMark = () => {
 
 const registerUser = async (req, res) => {
 	    try {
+	        if (mongoose.connection.readyState !== 1) {
+	            return res.status(503).json({ message: 'Database not connected. Check MongoDB Atlas IP Access List and MONGODB_URI.' });
+	        }
+
 	        const { name, email, password, role } = req.body;
 	        const emailTrimmed = String(email || '').trim();
 	        const emailNormalized = emailTrimmed.toLowerCase();
@@ -77,8 +82,12 @@ const registerUser = async (req, res) => {
 };
 
 const resetPassword = async (req, res) => {
-  try {
-    const { email, newPassword } = req.body;
+	  try {
+	    if (mongoose.connection.readyState !== 1) {
+	      return res.status(503).json({ message: 'Database not connected. Check MongoDB Atlas IP Access List and MONGODB_URI.' });
+	    }
+
+	    const { email, newPassword } = req.body;
 
     if (!email || !newPassword) {
       return res.status(400).json({ message: 'Email and newPassword are required' });
@@ -100,6 +109,10 @@ const resetPassword = async (req, res) => {
 
 const loginUser = async (req, res) => {
 	    try {
+	        if (mongoose.connection.readyState !== 1) {
+	            return res.status(503).json({ message: 'Database not connected. Check MongoDB Atlas IP Access List and MONGODB_URI.' });
+	        }
+
 	        const { email, password } = req.body;
 	        if (!email || !password) {
 	            return res.status(400).json({ message: 'Email and password are required' });
