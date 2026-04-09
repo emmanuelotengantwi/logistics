@@ -361,3 +361,14 @@ body {
   line-height: 1.75;
   white-space: pre-wrap;
 }
+
+/* Green table header (My Shipment style) */
+.data-table-green thead th {
+  background: #16a34a;
+  color: #fff;
+  border-bottom: none;
+}
+
+.data-table-green td {
+  background: #fff;
+}
