@@ -10,15 +10,16 @@ const getRegistrations = async (req, res) => {
     const includeRecent = String(req.query.includeRecent || '').toLowerCase() === 'true';
     const limit = Math.max(1, Math.min(Number(req.query.limit) || 12, 50));
 
-    if (mongoose.connection.readyState !== 1) {
+    const dbConnected = mongoose.connection.readyState === 1;
+    if (!dbConnected) {
       return res.json({ total: 0, dbConnected: false });
     }
 
-    const query = role ? { role } : {};
+    const query = !role || role.toLowerCase() === 'all' ? {} : { role };
     const total = await User.countDocuments(query);
 
     if (!includeRecent) {
-      return res.json({ total });
+      return res.json({ total, dbConnected: true });
     }
 
     const maskName = (name) => {
@@ -38,6 +39,7 @@ const getRegistrations = async (req, res) => {
 
     res.json({
       total,
+      dbConnected: true,
       recent: recent.map((u) => ({
         id: u._id,
         displayName: maskName(u.name),

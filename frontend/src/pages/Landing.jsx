@@ -256,6 +256,7 @@ const Community = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [total, setTotal] = useState(0);
+    const [dbConnected, setDbConnected] = useState(true);
 
     const fetchData = async () => {
         setError('');
@@ -263,9 +264,11 @@ const Community = () => {
         try {
             const { data } = await api.get('/public/registrations?role=Customer');
             setTotal(Number(data?.total || 0));
+            setDbConnected(data?.dbConnected !== false);
         } catch (err) {
             setError(err.response?.data?.message || 'Could not load community');
             setTotal(0);
+            setDbConnected(true);
         } finally {
             setLoading(false);
         }
@@ -294,9 +297,16 @@ const Community = () => {
                 {loading ? (
                     <div className="text-dim">Loading…</div>
                 ) : (
-                    <div className="text-dim">
-                        Customers registered: <span style={{ fontWeight: 900, color: 'var(--dark-blue)' }}>{total}</span>
-                    </div>
+                    <>
+                        {!dbConnected && (
+                            <div className="badge badge-warning" style={{ marginBottom: '1rem', display: 'inline-block' }}>
+                                Backend database not connected
+                            </div>
+                        )}
+                        <div className="text-dim">
+                            Customers registered: <span style={{ fontWeight: 900, color: 'var(--dark-blue)' }}>{total}</span>
+                        </div>
+                    </>
                 )}
             </div>
         </SectionWrapper>
