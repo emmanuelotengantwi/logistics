@@ -57,22 +57,36 @@ const CustomerAddress = () => {
 
 	    const commonLines = [`唛头: ${shippingMark}`, `(电话): ${seaPhones}`];
 
-    if (state.shippingMode === 'Air') {
-      return [
-        {
-          key: 'air',
-          title: 'Air Address (China)',
-          rateLabel: 'Air address rate',
-          rateValue: '$0.00',
-          lines: [
-            ...commonLines,
-            'Province/City: Guangdong / Guangzhou',
-            'Address: (Add your warehouse street address here)',
-            'Postal Code: (TBD)',
-          ],
-        },
-      ];
-    }
+	    if (state.shippingMode === 'Air') {
+	      const airPhone = '13236479501';
+	      const airMark = `唛头 AMOOKSCO-${clientName}`;
+	      const airTel = `(电话): ${airPhone}`;
+
+	      return [
+	        {
+	          key: 'air-normal',
+	          title: 'Aircargo normal goods address',
+	          rateLabel: 'Air address rate',
+	          rateValue: '$0.00',
+	          lines: [
+	            `广东省广州市越秀区广园西路101号通通商贸城AB110档 麦克专线 Acc002 (${clientName}) ${airPhone}`,
+	            airMark,
+	            airTel,
+	          ],
+	        },
+	        {
+	          key: 'air-battery',
+	          title: 'Aircargo battery goods address',
+	          rateLabel: 'Air address rate',
+	          rateValue: '$0.00',
+	          lines: [
+	            `广东省广州市越秀区广园西路101号通通商贸城AB103档 (${clientName}):${airPhone}`,
+	            airMark,
+	            airTel,
+	          ],
+	        },
+	      ];
+	    }
 
 	    return [
 	      {
