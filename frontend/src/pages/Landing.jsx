@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
 	    Phone, Mail, MapPin, Search, Plane, Ship, Truck, Warehouse, 
 	    ArrowRight, Star, ChevronDown, CheckCircle, Navigation, Anchor, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import api from '../api/axios';
 
 const MotionA = motion.a;
 const MotionSpan = motion.span;
@@ -251,6 +252,76 @@ const MinimalTracker = () => {
     );
 };
 
+const Community = () => {
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [total, setTotal] = useState(0);
+    const [recent, setRecent] = useState([]);
+
+    const fetchData = async () => {
+        setError('');
+        setLoading(true);
+        try {
+            const { data } = await api.get('/public/registrations?role=Customer&limit=12');
+            setTotal(Number(data?.total || 0));
+            setRecent(Array.isArray(data?.recent) ? data.recent : []);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Could not load community');
+            setTotal(0);
+            setRecent([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    return (
+        <SectionWrapper bg="var(--bg-secondary)">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '1rem', marginBottom: '2rem' }}>
+                <div>
+                    <div className="section-label">COMMUNITY</div>
+                    <h2 className="heading-2" style={{ marginBottom: '0.5rem' }}>Recently registered customers</h2>
+                    <div className="text-dim">Total customers: <span style={{ fontWeight: 800, color: 'var(--dark-blue)' }}>{total}</span></div>
+                </div>
+                <button className="btn btn-secondary" onClick={fetchData} disabled={loading} style={{ padding: '0.5rem 0.9rem' }}>
+                    {loading ? 'Loading…' : 'Refresh'}
+                </button>
+            </div>
+
+            {error && <div className="badge badge-error" style={{ marginBottom: '1rem' }}>{error}</div>}
+
+            <div className="glass-card" style={{ padding: '1.5rem' }}>
+                {loading ? (
+                    <div className="text-dim">Loading…</div>
+                ) : recent.length === 0 ? (
+                    <div className="text-dim">No registrations to display yet.</div>
+                ) : (
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+                        {recent.map((u) => {
+                            const name = u.displayName || 'Customer';
+                            const initial = String(name).trim().charAt(0).toUpperCase() || 'C';
+                            return (
+                                <div key={u.id} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1rem', background: '#fff', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'var(--dark-blue)' }}>
+                                        {initial}
+                                    </div>
+                                    <div>
+                                        <div style={{ fontWeight: 700, color: 'var(--dark-blue)' }}>{name}</div>
+                                        <div className="text-dim" style={{ fontSize: '0.85rem' }}>{u.joinedAt ? new Date(u.joinedAt).toISOString().split('T')[0] : ''}</div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </SectionWrapper>
+    );
+};
+
 const Footer = () => (
     <footer style={{ background: '#0a0f1b', padding: '5rem 5% 2rem', color: '#fff' }}>
         <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '3rem', marginBottom: '2rem' }}>
@@ -286,17 +357,18 @@ const Footer = () => (
 );
 
 const Landing = () => (
-    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', color: 'var(--text-primary)' }}>
-        <Navbar />
-        <main>
-            <HeroSplit />
-            <ServicesAccordionLayout />
-            <TimelineProcess />
-            <Testimonials />
-            <MinimalTracker />
-        </main>
-        <Footer />
-    </div>
+	    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', color: 'var(--text-primary)' }}>
+	        <Navbar />
+	        <main>
+	            <HeroSplit />
+	            <ServicesAccordionLayout />
+	            <TimelineProcess />
+	            <Testimonials />
+	            <Community />
+	            <MinimalTracker />
+	        </main>
+	        <Footer />
+	    </div>
 );
 
 export default Landing;

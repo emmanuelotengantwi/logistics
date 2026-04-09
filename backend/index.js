@@ -17,6 +17,7 @@ const containerRoutes = require('./routes/containerRoutes');
 
 const paymentRoutes = require('./routes/paymentRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
+const publicRoutes = require('./routes/publicRoutes');
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -24,6 +25,7 @@ app.use('/api/shipments', shipmentRoutes);
 app.use('/api/containers', containerRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/public', publicRoutes);
 
 // Error Middleware
 app.use(errorHandler);
