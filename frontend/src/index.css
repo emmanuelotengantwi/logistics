@@ -414,3 +414,10 @@ body {
   padding: 1.5rem;
   box-shadow: 0 25px 50px rgba(2, 6, 23, 0.25);
 }
+
+/* Blue table header (My Invoices style) */
+.data-table-blue thead th {
+  background: #0b74ff;
+  color: #fff;
+  border-bottom: none;
+}
