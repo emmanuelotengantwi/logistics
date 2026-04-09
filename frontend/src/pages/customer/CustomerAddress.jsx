@@ -50,12 +50,12 @@ const CustomerAddress = () => {
   const destinationCountries = ['Ghana', 'Nigeria', 'Liberia', 'Sierra Leone'];
   const shippingModes = ['Sea', 'Air'];
 
-  const addressCards = useMemo(() => {
-    const seaPhones = '17612045049 / 13250714180';
-    const seaWarehouseLine = '佛山市南海区里水镇洲村深坑工业区自编23号 里德仓';
-    const seaReceiver = `收件人 AMOOKSCO - ${clientName}`;
+	  const addressCards = useMemo(() => {
+	    const seaPhones = '17612045049 / 13250714180';
+	    const seaWarehouseLine = '佛山市南海区里水镇洲村深坑工业区自编23号 里德仓';
+	    const seaReceiver = `收件人 AMOOKSCO - ${clientName}`;
 
-    const commonLines = [`唛头: ${shippingMark}`, `(电话): ${seaPhones}`];
+	    const commonLines = [`唛头: ${shippingMark}`, `(电话): ${seaPhones}`];
 
     if (state.shippingMode === 'Air') {
       return [
@@ -74,43 +74,29 @@ const CustomerAddress = () => {
       ];
     }
 
-    return [
-      {
-        key: 'foshan',
-        title: 'FOSHAN/GUANGZHOU Sea Address',
-        rateLabel: 'Sea address rate',
-        rateValue: '$239',
-        lines: [
-          `AMOOKSCO - ${clientName} ${seaPhones}`,
-          seaWarehouseLine,
-          seaReceiver,
-          '',
-          ...commonLines,
-        ],
-      },
-      {
-        key: 'yiwu',
-        title: 'YIWU Sea Address',
-        rateLabel: 'Sea address rate',
-        rateValue: '$260',
-        lines: [
-          `AMOOKSCO - ${clientName} (电话): (Add Yiwu phone(s))`,
-          '义乌地址: (Add your Yiwu warehouse address here)',
-          `收件人 AMOOKSCO - ${clientName}`,
-          '',
-          `唛头: ${shippingMark}`,
-          '(电话): (Add Yiwu phone(s))',
-        ],
-      },
-    ];
-  }, [clientName, shippingMark, state.shippingMode]);
+	    return [
+	      {
+	        key: 'sea',
+	        title: 'Sea Address',
+	        rateLabel: 'Sea address rate',
+	        rateValue: '$239',
+	        lines: [
+	          `AMOOKSCO - ${clientName} ${seaPhones}`,
+	          seaWarehouseLine,
+	          seaReceiver,
+	          '',
+	          ...commonLines,
+	        ],
+	      },
+	    ];
+	  }, [clientName, shippingMark, state.shippingMode]);
 
   const noteText = useMemo(() => {
-    const minCbm = '0.02';
-    const rates =
-      state.shippingMode === 'Sea'
-        ? ['FOSHAN/GUANGZHOU Sea Address Rate: $239', 'YIWU Sea Address Rate: $260']
-        : ['Air Address Rate: $0.00'];
+	    const minCbm = '0.02';
+	    const rates =
+	      state.shippingMode === 'Sea'
+	        ? ['Sea Address Rate: $239']
+	        : ['Air Address Rate: $0.00'];
 
     return {
       minCbm,
