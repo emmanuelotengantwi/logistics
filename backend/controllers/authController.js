@@ -73,7 +73,29 @@ const registerUser = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: error.message });
+	    }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({ message: 'Email and newPassword are required' });
     }
+
+    const user = await findUserByEmailInsensitive(email);
+    if (!user) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    user.password = String(newPassword);
+    await user.save();
+
+    res.json({ message: 'Password reset successful' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 const loginUser = async (req, res) => {
@@ -119,4 +141,4 @@ const loginUser = async (req, res) => {
 	    }
 };
 
-module.exports = { registerUser, loginUser };
+module.exports = { registerUser, loginUser, resetPassword };

@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Layout from './components/layout/Layout';
 import DashboardNotFound from './pages/DashboardNotFound';
 import Notifications from './pages/Notifications';
+import ResetPassword from './pages/ResetPassword';
 
 import CustomerAddress from './pages/customer/CustomerAddress';
 import CustomerShipments from './pages/customer/CustomerShipments';
@@ -37,6 +38,7 @@ function App() {
         <Route path="/track" element={<PublicTracking />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
         <Route path="/dashboard" element={<Layout />}>
           {isAdmin ? <Route index element={<AdminDashboard />} /> : <Route index element={<CustomerDashboard />} />}

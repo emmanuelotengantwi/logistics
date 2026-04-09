@@ -42,16 +42,16 @@ const Login = () => {
                         </div>
                     </div>
                     
-                    <div className="input-group" style={{ marginBottom: '2rem' }}>
-                        <label className="input-label" style={{ color: 'var(--dark-blue)', fontWeight: 600 }}>Password</label>
-                        <div style={{ position: 'relative' }}>
-                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="input-field" style={{ width: '100%', paddingRight: '2.5rem' }} required />
-                            <Lock size={18} color="var(--text-secondary)" style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-                        </div>
-                        <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
-                            <a href="#" style={{ color: 'var(--accent-blue)', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 600 }}>Forgot your password?</a>
-                        </div>
-                    </div>
+	                    <div className="input-group" style={{ marginBottom: '2rem' }}>
+	                        <label className="input-label" style={{ color: 'var(--dark-blue)', fontWeight: 600 }}>Password</label>
+	                        <div style={{ position: 'relative' }}>
+	                            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="input-field" style={{ width: '100%', paddingRight: '2.5rem' }} required />
+	                            <Lock size={18} color="var(--text-secondary)" style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+	                        </div>
+	                        <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
+	                            <Link to="/reset-password" style={{ color: 'var(--accent-blue)', fontSize: '0.875rem', textDecoration: 'none', fontWeight: 600 }}>Forgot your password?</Link>
+	                        </div>
+	                    </div>
                     
                     <button type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem', fontSize: '1.1rem', borderRadius: '8px' }}>Login</button>
                     
