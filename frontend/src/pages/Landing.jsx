@@ -256,19 +256,16 @@ const Community = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [total, setTotal] = useState(0);
-    const [recent, setRecent] = useState([]);
 
     const fetchData = async () => {
         setError('');
         setLoading(true);
         try {
-            const { data } = await api.get('/public/registrations?role=Customer&limit=12');
+            const { data } = await api.get('/public/registrations?role=Customer');
             setTotal(Number(data?.total || 0));
-            setRecent(Array.isArray(data?.recent) ? data.recent : []);
         } catch (err) {
             setError(err.response?.data?.message || 'Could not load community');
             setTotal(0);
-            setRecent([]);
         } finally {
             setLoading(false);
         }
@@ -296,25 +293,9 @@ const Community = () => {
             <div className="glass-card" style={{ padding: '1.5rem' }}>
                 {loading ? (
                     <div className="text-dim">Loading…</div>
-                ) : recent.length === 0 ? (
-                    <div className="text-dim">No registrations to display yet.</div>
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
-                        {recent.map((u) => {
-                            const name = u.displayName || 'Customer';
-                            const initial = String(name).trim().charAt(0).toUpperCase() || 'C';
-                            return (
-                                <div key={u.id} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '1rem', background: '#fff', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: 'var(--dark-blue)' }}>
-                                        {initial}
-                                    </div>
-                                    <div>
-                                        <div style={{ fontWeight: 700, color: 'var(--dark-blue)' }}>{name}</div>
-                                        <div className="text-dim" style={{ fontSize: '0.85rem' }}>{u.joinedAt ? new Date(u.joinedAt).toISOString().split('T')[0] : ''}</div>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                    <div className="text-dim">
+                        Customers registered: <span style={{ fontWeight: 900, color: 'var(--dark-blue)' }}>{total}</span>
                     </div>
                 )}
             </div>
