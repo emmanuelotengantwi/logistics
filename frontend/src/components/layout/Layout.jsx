@@ -1,115 +1,169 @@
-import React from 'react';
-import { Outlet, Link, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Outlet, NavLink, useNavigate, Navigate } from 'react-router-dom';
 import { 
-    LayoutDashboard, MapPin, Package, ClipboardList, Map, 
-    CreditCard, FileText, Wallet, Calculator, MessageSquare, 
-    Truck, Clock, User, LogOut, Settings, Bell, Search, ChevronRight 
+	    LayoutDashboard, MapPin, Package, ClipboardList, Map, 
+	    CreditCard, FileText, Wallet, Calculator, MessageSquare, 
+	    Truck, Clock, User, LogOut, Settings, Bell, Search, ChevronRight 
 } from 'lucide-react';
+import api from '../../api/axios';
 
 const Layout = () => {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+	    const navigate = useNavigate();
+	    const userInfo = JSON.parse(localStorage.getItem('userInfo') || 'null');
+	    const isAdmin = userInfo?.role === 'Admin';
+	    const [unreadCount, setUnreadCount] = useState(0);
+	    const [searchValue, setSearchValue] = useState('');
 
-    const handleLogout = () => {
-        localStorage.removeItem('userInfo');
-        navigate('/login');
-    };
+		    const handleLogout = () => {
+		        localStorage.removeItem('userInfo');
+		        navigate('/login');
+		    };
 
-    if (!userInfo) {
-        return <Navigate to="/login" />
-    }
+		    const customerNav = useMemo(() => ([
+	        { to: '/dashboard', end: true, icon: <LayoutDashboard size={18} />, label: 'My Dashboard' },
+	        { to: '/dashboard/address', icon: <MapPin size={18} />, label: 'My AMOOKSCO address' },
+	        { to: '/dashboard/shipments', icon: <Package size={18} />, label: 'My Shipment' },
+	        { to: '/dashboard/packing-list', icon: <ClipboardList size={18} />, label: 'My Packing List' },
+	        { to: '/dashboard/track', icon: <Map size={18} />, label: 'Track your Shipment' },
+	        { to: '/dashboard/payments', icon: <CreditCard size={18} />, label: 'My Payments' },
+	        { to: '/dashboard/invoices', icon: <FileText size={18} />, label: 'My Invoices' },
+	        { to: '/dashboard/wallet', icon: <Wallet size={18} />, label: 'My Wallet' },
+	        { to: '/dashboard/cbm', icon: <Calculator size={18} />, label: 'CBM Calculator' },
+	        { to: '/dashboard/complaints', icon: <MessageSquare size={18} />, label: 'Lodge a Complaint' },
+	        { to: '/dashboard/pickups', icon: <Truck size={18} />, label: 'Pick-ups', chevron: true },
+	    ]), []);
 
-    const isActive = (path) => location.pathname === path ? 'nav-item active' : 'nav-item';
+	    const customerReports = useMemo(() => ([
+	        { to: '/dashboard/topups', icon: <Clock size={18} />, label: 'Top-Up history' },
+	        { to: '/dashboard/invoices-report', icon: <FileText size={18} />, label: 'Invoices Report' },
+	    ]), []);
 
-    return (
-        <div className="app-layout">
-            <aside className="app-sidebar" style={{ width: '260px', padding: '1.5rem 0', overflowY: 'auto' }}>
+	    const adminNav = useMemo(() => ([
+	        { to: '/dashboard', end: true, icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
+	        { to: '/dashboard/users', icon: <User size={18} />, label: 'Manage Users' },
+	        { to: '/dashboard/settings', icon: <Settings size={18} />, label: 'Configure Rates' },
+	    ]), []);
+
+		    useEffect(() => {
+		        if (!userInfo) return;
+		        let isMounted = true;
+		        const fetchUnread = async () => {
+		            try {
+		                const { data } = await api.get('/notifications');
+		                const count = Array.isArray(data) ? data.filter((n) => !n.read).length : 0;
+		                if (isMounted) setUnreadCount(count);
+		            } catch {
+		                // keep UI usable even when backend isn't running
+		            }
+		        };
+		        fetchUnread();
+		        return () => {
+		            isMounted = false;
+		        };
+		    }, [userInfo]);
+
+		    if (!userInfo) {
+		        return <Navigate to="/login" />
+		    }
+
+	    return (
+	        <div className="app-layout">
+	            <aside className="app-sidebar" style={{ width: '260px', padding: '1.5rem 0', overflowY: 'auto' }}>
                 <div style={{ marginBottom: '2rem', padding: '0 1.5rem' }}>
                     <h1 className="heading-2" style={{ color: 'var(--accent-blue)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <img src="/amooksco.jpeg" alt="Logo" style={{ height: '32px', borderRadius: '50%' }} />
                         AMOOKSCO
                     </h1>
-                </div>
+	                </div>
 
-                <nav style={{ flex: 1 }}>
-                    <div className="sidebar-group-label">Services</div>
-                    <Link to="/dashboard" className={isActive('/dashboard')}>
-                        <LayoutDashboard size={18} /> My Dashboard
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <MapPin size={18} /> My AMOOKSCO address
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <Package size={18} /> My Shipment
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <ClipboardList size={18} /> My Packing List
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <Map size={18} /> Track your Shipment
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <CreditCard size={18} /> My Payments
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <FileText size={18} /> My Invoices
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <Wallet size={18} /> My Wallet
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <Calculator size={18} /> CBM Calculator
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <MessageSquare size={18} /> Lodge a Complaint
-                    </Link>
-                    <Link to="/dashboard" className="nav-item" style={{ justifyContent: 'space-between' }}>
-                        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                            <Truck size={18} /> Pick-ups
-                        </div>
-                        <ChevronRight size={16} />
-                    </Link>
+	                <nav style={{ flex: 1 }}>
+	                    {!isAdmin ? (
+	                        <>
+	                            <div className="sidebar-group-label">Services</div>
+	                            {customerNav.map((item) => (
+	                                <NavLink
+	                                    key={item.to}
+	                                    to={item.to}
+	                                    end={item.end}
+	                                    className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
+	                                    style={item.chevron ? { justifyContent: 'space-between' } : undefined}
+	                                >
+	                                    {item.chevron ? (
+	                                        <>
+	                                            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+	                                                {item.icon} {item.label}
+	                                            </div>
+	                                            <ChevronRight size={16} />
+	                                        </>
+	                                    ) : (
+	                                        <>
+	                                            {item.icon} {item.label}
+	                                        </>
+	                                    )}
+	                                </NavLink>
+	                            ))}
 
-                    <div className="sidebar-group-label" style={{ marginTop: '2rem' }}>Reports</div>
-                    <Link to="/dashboard" className="nav-item">
-                        <Clock size={18} /> Top-Up history
-                    </Link>
-                    <Link to="/dashboard" className="nav-item">
-                        <FileText size={18} /> Invoices Report
-                    </Link>
-
-                    {userInfo.role === 'Admin' && (
-                        <>
-                            <div className="sidebar-group-label" style={{ marginTop: '2rem' }}>Admin Tools</div>
-                            <Link to="/dashboard/users" className={isActive('/dashboard/users')}>
-                                <User size={18} /> Manage Users
-                            </Link>
-                            <Link to="/dashboard/settings" className={isActive('/dashboard/settings')}>
-                                <Settings size={18} /> Configure Rates
-                            </Link>
-                        </>
-                    )}
-                </nav>
-            </aside>
+	                            <div className="sidebar-group-label" style={{ marginTop: '2rem' }}>Reports</div>
+	                            {customerReports.map((item) => (
+	                                <NavLink
+	                                    key={item.to}
+	                                    to={item.to}
+	                                    className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
+	                                >
+	                                    {item.icon} {item.label}
+	                                </NavLink>
+	                            ))}
+	                        </>
+	                    ) : (
+	                        <>
+	                            <div className="sidebar-group-label">Admin</div>
+	                            {adminNav.map((item) => (
+	                                <NavLink
+	                                    key={item.to}
+	                                    to={item.to}
+	                                    end={item.end}
+	                                    className={({ isActive }) => (isActive ? 'nav-item active' : 'nav-item')}
+	                                >
+	                                    {item.icon} {item.label}
+	                                </NavLink>
+	                            ))}
+	                        </>
+	                    )}
+	                </nav>
+	            </aside>
             
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                <header className="app-topbar">
-                    <div>
-                        <div style={{ position: 'relative' }}>
-                            <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
-                            <input type="text" placeholder="Search" className="topbar-search" style={{ paddingLeft: '2.5rem' }} />
-                        </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-                        <div style={{ position: 'relative', cursor: 'pointer' }}>
-                            <Bell size={20} color="var(--text-secondary)" />
-                            <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'var(--accent-blue)', color: '#fff', fontSize: '10px', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>0</span>
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={handleLogout} title="Click to Logout">
-                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <User size={20} color="var(--text-secondary)" />
-                            </div>
+	            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+	                <header className="app-topbar">
+	                    <div>
+	                        <div style={{ position: 'relative' }}>
+	                            <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)' }} />
+	                            <input
+	                                type="text"
+	                                placeholder={isAdmin ? 'Search' : 'Search shipments…'}
+	                                className="topbar-search"
+	                                style={{ paddingLeft: '2.5rem' }}
+	                                value={searchValue}
+	                                onChange={(e) => setSearchValue(e.target.value)}
+	                                onKeyDown={(e) => {
+	                                    if (e.key === 'Enter' && !isAdmin) {
+	                                        const q = searchValue.trim();
+	                                        navigate(q ? `/dashboard/shipments?q=${encodeURIComponent(q)}` : '/dashboard/shipments');
+	                                    }
+	                                }}
+	                            />
+	                        </div>
+	                    </div>
+	                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+	                        <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => navigate('/dashboard/notifications')} title="Notifications">
+	                            <Bell size={20} color="var(--text-secondary)" />
+	                            <span style={{ position: 'absolute', top: '-5px', right: '-5px', background: 'var(--accent-blue)', color: '#fff', fontSize: '10px', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+	                                {unreadCount}
+	                            </span>
+	                        </div>
+	                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={handleLogout} title="Click to Logout">
+	                            <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--surface-hover)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+	                                <User size={20} color="var(--text-secondary)" />
+	                            </div>
                             <div style={{ fontSize: '0.9rem', fontWeight: '500' }}>{userInfo.name.split(' ')[0]}</div>
                             <LogOut size={16} color="var(--text-secondary)" />
                         </div>

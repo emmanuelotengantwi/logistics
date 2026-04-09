@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import api from '../api/axios';
 import { Package, Ship, CheckCircle, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const CustomerDashboard = () => {
     const [shipments, setShipments] = useState([]);
@@ -14,11 +15,11 @@ const CustomerDashboard = () => {
         { id: 4, item: 'N/A', tracking: '773397554606910', ctn: '1', cbm: '0.04', weight: '3', date: '2025-12-29' }
     ];
 
-    useEffect(() => {
-        const fetchShipments = async () => {
-            try {
-                const { data } = await api.get('/shipments');
-                setShipments(data);
+	    useEffect(() => {
+	        const fetchShipments = async () => {
+	            try {
+	                const { data } = await api.get('/shipments');
+	                setShipments(data);
             } catch (err) {
                 console.error(err);
             }
@@ -26,11 +27,22 @@ const CustomerDashboard = () => {
         fetchShipments();
     }, []);
 
-    // Render database results or fallback to static list to match reference UI when empty
-    const displayShipments = shipments.length > 0 ? shipments : staticShipments;
+	    // Render database results or fallback to static list to match reference UI when empty
+	    const displayShipments = shipments.length > 0 ? shipments : staticShipments;
 
-    return (
-        <div className="animate-slide-up">
+	    const metrics = useMemo(() => {
+	        const total = displayShipments.length;
+	        const inTransitStatuses = new Set(['In Transit', 'Processing', 'Arrived at Port', 'Cleared']);
+	        const completedStatuses = new Set(['Delivered', 'Ready for Pickup']);
+
+	        const inTransit = displayShipments.filter((s) => inTransitStatuses.has(s.status)).length;
+	        const completed = displayShipments.filter((s) => completedStatuses.has(s.status)).length;
+
+	        return { total, inTransit, completed };
+	    }, [displayShipments]);
+
+	    return (
+	        <div className="animate-slide-up">
             {/* Hero Alert */}
             <div style={{ background: '#fff', padding: '1rem 2rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', boxShadow: '0 2px 4px rgba(0,0,0,0.02)' }}>
                 <span role="img" aria-label="wave" style={{ fontSize: '1.2rem' }}>👋</span>
@@ -39,47 +51,47 @@ const CustomerDashboard = () => {
                 </span>
             </div>
 
-            {/* Metric Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
-                <div className="metric-card white">
-                    <div>
-                        <div className="metric-title" style={{ color: 'var(--accent-blue)', textTransform: 'uppercase' }}>Total SHIPMENTS</div>
-                        <div className="metric-value">4</div>
-                    </div>
-                    <div style={{ padding: '0.75rem', border: '2px solid var(--dark-blue)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Package size={36} color="var(--dark-blue)" strokeWidth={1.5} />
-                    </div>
-                </div>
+	            {/* Metric Cards */}
+	            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
+	                <div className="metric-card white">
+	                    <div>
+	                        <div className="metric-title" style={{ color: 'var(--accent-blue)', textTransform: 'uppercase' }}>Total SHIPMENTS</div>
+	                        <div className="metric-value">{metrics.total}</div>
+	                    </div>
+	                    <div style={{ padding: '0.75rem', border: '2px solid var(--dark-blue)', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+	                        <Package size={36} color="var(--dark-blue)" strokeWidth={1.5} />
+	                    </div>
+	                </div>
 
-                <div className="metric-card orange">
-                    <div>
-                        <div className="metric-title" style={{ color: '#fff' }}>Goods in Transit</div>
-                        <div className="metric-value">7</div>
-                    </div>
-                    <div style={{ paddingBottom: '0.25rem' }}>
-                        <Ship size={54} color="#fff" strokeWidth={1.2} />
-                    </div>
-                </div>
+	                <div className="metric-card orange">
+	                    <div>
+	                        <div className="metric-title" style={{ color: '#fff' }}>Goods in Transit</div>
+	                        <div className="metric-value">{metrics.inTransit}</div>
+	                    </div>
+	                    <div style={{ paddingBottom: '0.25rem' }}>
+	                        <Ship size={54} color="#fff" strokeWidth={1.2} />
+	                    </div>
+	                </div>
 
-                <div className="metric-card dark">
-                    <div>
-                        <div className="metric-title" style={{ color: '#fff' }}>Completed SHIPMENTS</div>
-                        <div className="metric-value">0</div>
-                    </div>
-                    <div style={{ padding: '0.75rem', border: '2px solid #ffffff', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CheckCircle size={36} color="#fff" strokeWidth={1.5} />
-                    </div>
+	                <div className="metric-card dark">
+	                    <div>
+	                        <div className="metric-title" style={{ color: '#fff' }}>Completed SHIPMENTS</div>
+	                        <div className="metric-value">{metrics.completed}</div>
+	                    </div>
+	                    <div style={{ padding: '0.75rem', border: '2px solid #ffffff', borderRadius: 'var(--radius-sm)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+	                        <CheckCircle size={36} color="#fff" strokeWidth={1.5} />
+	                    </div>
                 </div>
             </div>
 
             {/* Data Table Container */}
-            <div className="data-table-container">
-                <div className="data-table-header">
-                    <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--dark-blue)' }}>Recent Shipment</h3>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem', cursor: 'pointer', fontWeight: 500, transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--accent-blue)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}>
-                        View All <ArrowRight size={16} />
-                    </div>
-                </div>
+	            <div className="data-table-container">
+	                <div className="data-table-header">
+	                    <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'var(--dark-blue)' }}>Recent Shipment</h3>
+	                    <Link to="/dashboard/shipments" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem', cursor: 'pointer', fontWeight: 500, textDecoration: 'none' }}>
+	                        <span>View All</span> <ArrowRight size={16} />
+	                    </Link>
+	                </div>
                 
                 <div style={{ overflowX: 'auto' }}>
                     <table className="data-table">
@@ -111,11 +123,11 @@ const CustomerDashboard = () => {
                                     <td>{shipment.ctn || '1'}</td>
                                     <td>{shipment.cbm || '0.02'}</td>
                                     <td>{shipment.weight || '2'}</td>
-                                    <td>{shipment.date || new Date(shipment.createdAt || Date.now()).toISOString().split('T')[0]}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+	                                    <td>{shipment.date || (shipment.createdAt ? new Date(shipment.createdAt).toISOString().split('T')[0] : '—')}</td>
+	                                </tr>
+	                            ))}
+	                        </tbody>
+	                    </table>
                 </div>
             </div>
         </div>

@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
-    Phone, Mail, MapPin, Search, Plane, Ship, Truck, Warehouse, 
-    ArrowRight, Star, ChevronDown, CheckCircle, Navigation, Anchor, Globe
+	    Phone, Mail, MapPin, Search, Plane, Ship, Truck, Warehouse, 
+	    ArrowRight, Star, ChevronDown, CheckCircle, Navigation, Anchor, Globe
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const MotionA = motion.a;
+const MotionSpan = motion.span;
+const MotionDiv = motion.div;
 
 // Basic wrapper for consistent constraints
 const SectionWrapper = ({ children, bg = "var(--bg-primary)", id }) => (
@@ -27,12 +31,12 @@ const Navbar = () => (
                 <h1 style={{ margin: 0, color: 'var(--dark-blue)', fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em', lineHeight: 1 }}>AMOOKSCO <span style={{ color: 'var(--accent-blue)', display: 'block', fontSize: '0.9rem', letterSpacing: '0.1em', marginTop: '4px' }}>LOGISTICS</span></h1>
             </Link>
         </div>
-        <nav className="d-none-mobile" style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontSize: '0.95rem', fontWeight: '500' }}>
-            <motion.a whileHover={{ color: 'var(--accent-blue)' }} href="#home" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</motion.a>
-            <motion.a whileHover={{ color: 'var(--accent-blue)' }} href="#services" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Services</motion.a>
-            <motion.a whileHover={{ color: 'var(--accent-blue)' }} href="#tracking" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Tracking</motion.a>
-            <Link to="/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}><motion.span whileHover={{ color: 'var(--accent-blue)' }}>Login / Sign Up</motion.span></Link>
-        </nav>
+	        <nav className="d-none-mobile" style={{ display: 'flex', gap: '2rem', alignItems: 'center', fontSize: '0.95rem', fontWeight: '500' }}>
+	            <MotionA whileHover={{ color: 'var(--accent-blue)' }} href="#home" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Home</MotionA>
+	            <MotionA whileHover={{ color: 'var(--accent-blue)' }} href="#services" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Services</MotionA>
+	            <MotionA whileHover={{ color: 'var(--accent-blue)' }} href="#tracking" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Tracking</MotionA>
+	            <Link to="/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}><MotionSpan whileHover={{ color: 'var(--accent-blue)' }}>Login / Sign Up</MotionSpan></Link>
+	        </nav>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <div className="d-none-mobile" style={{ fontWeight: '600', color: 'var(--dark-blue)' }}>+1 (555) 303-9452</div>
             <Link to="/register" className="btn btn-secondary" style={{ padding: '0.5rem 1rem' }}>Message Us</Link>
@@ -45,7 +49,7 @@ const HeroSplit = () => (
     <section id="home" style={{ display: 'flex', flexWrap: 'wrap', minHeight: '85vh', borderBottom: '1px solid var(--border-color)' }}>
         {/* LEFT COLLAGE SIDE */}
         <div style={{ flex: '1 1 500px', padding: '4rem 5%', display: 'flex', flexDirection: 'column', justifyContent: 'center', borderRight: '1px solid var(--border-color)', position: 'relative' }}>
-            <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+	            <MotionDiv initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
                 <h1 style={{ fontSize: 'clamp(3rem, 5vw, 5rem)', color: 'var(--dark-blue)', fontWeight: '800', lineHeight: 1.1, textTransform: 'uppercase' }}>
                     We Lead <br/><span style={{ color: 'var(--text-secondary)', fontWeight: '300' }}>Freight</span><br/>Forwarding.
                 </h1>
@@ -55,12 +59,12 @@ const HeroSplit = () => (
                     <div style={{ position: 'absolute', width: '250px', height: '250px', background: 'var(--bg-secondary)', borderRadius: '50%', border: '4px solid var(--border-color)', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Globe size={150} color="var(--border-color)" strokeWidth={1} />
                     </div>
-                    <motion.div animate={{ y: [-10, 10, -10] }} transition={{ duration: 5, repeat: Infinity }} style={{ position: 'absolute', zIndex: 2, top: '20px', left: '10%' }}>
-                        <Plane size={80} color="var(--dark-blue)" fill="#fff" />
-                    </motion.div>
-                    <motion.div animate={{ x: [-10, 10, -10] }} transition={{ duration: 6, repeat: Infinity }} style={{ position: 'absolute', zIndex: 2, bottom: '20px', right: '10%' }}>
-                        <Truck size={80} color="var(--accent-blue)" fill="#fff" />
-                    </motion.div>
+	                    <MotionDiv animate={{ y: [-10, 10, -10] }} transition={{ duration: 5, repeat: Infinity }} style={{ position: 'absolute', zIndex: 2, top: '20px', left: '10%' }}>
+	                        <Plane size={80} color="var(--dark-blue)" fill="#fff" />
+	                    </MotionDiv>
+	                    <MotionDiv animate={{ x: [-10, 10, -10] }} transition={{ duration: 6, repeat: Infinity }} style={{ position: 'absolute', zIndex: 2, bottom: '20px', right: '10%' }}>
+	                        <Truck size={80} color="var(--accent-blue)" fill="#fff" />
+	                    </MotionDiv>
                 </div>
 
                 {/* Footer blue bar reference */}
@@ -68,12 +72,12 @@ const HeroSplit = () => (
                     <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}><Phone size={18} color="var(--accent-blue)"/> 030 394 0526</div>
                     <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.85rem' }}><Mail size={18} color="var(--accent-blue)"/> support@amooksco.com</div>
                 </div>
-            </motion.div>
+	            </MotionDiv>
         </div>
 
         {/* RIGHT ABOUT SIDE */}
         <div style={{ flex: '1 1 500px', padding: '4rem 5%', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--bg-primary)' }}>
-            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} style={{ maxWidth: '600px' }}>
+	            <MotionDiv initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} style={{ maxWidth: '600px' }}>
                 <div className="section-label">ABOUT US</div>
                 <h2 className="heading-2" style={{ marginBottom: '2rem' }}>Affordable and Reliable Logistics Solutions</h2>
                 <p className="text-dim" style={{ fontSize: '1.1rem', lineHeight: '1.8', marginBottom: '3rem' }}>
@@ -83,7 +87,7 @@ const HeroSplit = () => (
                     <Link to="/dashboard" className="btn btn-primary" style={{ flex: 1, padding: '1.25rem 0' }}>Our Solutions</Link>
                     <Link to="/register" className="btn btn-secondary" style={{ flex: 1, padding: '1.25rem 0', borderColor: 'var(--accent-blue)' }}>Ship with Us</Link>
                 </div>
-            </motion.div>
+	            </MotionDiv>
         </div>
     </section>
 );
@@ -101,14 +105,14 @@ const AccordionItem = ({ title, desc, initOpen }) => {
             </button>
             <AnimatePresence>
                 {open && (
-                    <motion.div 
+	                    <MotionDiv 
                         initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
                         style={{ overflow: 'hidden' }}
                     >
                         <div style={{ padding: '2rem 1.5rem', color: 'var(--text-secondary)', lineHeight: '1.7' }}>
                             {desc}
                         </div>
-                    </motion.div>
+	                    </MotionDiv>
                 )}
             </AnimatePresence>
         </div>
@@ -121,7 +125,7 @@ const ServicesAccordionLayout = () => (
             <div style={{ flex: '1 1 400px' }}>
                 <div className="section-label">SERVICES</div>
                 <h2 className="heading-1" style={{ marginBottom: '2rem' }}>We assure fast and <span style={{ color: 'var(--dark-blue)', textDecoration: 'underline', textDecorationColor: 'var(--accent-blue)' }}>secure</span> logistics solutions for you.</h2>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-md)', display: 'inline-flex', marginTop: '1rem' }}>
+	                <div style={{ alignItems: 'center', gap: '1rem', background: 'var(--bg-secondary)', padding: '1rem', borderRadius: 'var(--radius-md)', display: 'inline-flex', marginTop: '1rem' }}>
                     <div style={{ width: '40px', height: '40px', background: 'var(--accent-blue)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Search size={20} color="#fff" /></div>
                     <span style={{ fontWeight: '600', color: 'var(--dark-blue)' }}>Expert Solutions</span>
                 </div>
@@ -195,7 +199,7 @@ const Testimonials = () => {
                     <h2 style={{ fontSize: '3.5rem', fontWeight: '800', lineHeight: 1.1, margin: '2rem 0 3rem' }}>Let's read user reviews.</h2>
                     
                     <AnimatePresence mode="wait">
-                        <motion.div 
+	                        <MotionDiv 
                             key={currentIndex}
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -208,7 +212,7 @@ const Testimonials = () => {
                             <div style={{ fontWeight: '600', fontSize: '1.1rem' }}>
                                 {reviews[currentIndex].author}; <span style={{ color: 'var(--accent-blue)', fontWeight: '400' }}>{reviews[currentIndex].role}</span>
                             </div>
-                        </motion.div>
+	                        </MotionDiv>
                     </AnimatePresence>
                     
                     <div style={{ display: 'flex', gap: '2rem', marginTop: '3rem', alignItems: 'center' }}>
