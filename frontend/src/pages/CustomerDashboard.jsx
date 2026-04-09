@@ -3,17 +3,9 @@ import api from '../api/axios';
 import { Package, Ship, CheckCircle, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const CustomerDashboard = () => {
-    const [shipments, setShipments] = useState([]);
-    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
-
-    // Static mapping for reference UI visualization if DB is currently empty
-    const staticShipments = [
-        { id: 1, item: 'Electric Gloves, Bluetooth', tracking: 'YT7594480935810', ctn: '1', cbm: '0.02', weight: '2', date: '2026-01-03' },
-        { id: 2, item: 'Package', tracking: 'JT3148269849516', ctn: '1', cbm: '0.02', weight: '1.5', date: '2025-12-31' },
-        { id: 3, item: 'Bluetooth Headphones', tracking: '78970184169226', ctn: '1', cbm: '0.02', weight: '2', date: '2025-12-30' },
-        { id: 4, item: 'N/A', tracking: '773397554606910', ctn: '1', cbm: '0.04', weight: '3', date: '2025-12-29' }
-    ];
+	const CustomerDashboard = () => {
+	    const [shipments, setShipments] = useState([]);
+	    const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
 
 	    useEffect(() => {
 	        const fetchShipments = async () => {
@@ -27,8 +19,7 @@ const CustomerDashboard = () => {
         fetchShipments();
     }, []);
 
-	    // Render database results or fallback to static list to match reference UI when empty
-	    const displayShipments = shipments.length > 0 ? shipments : staticShipments;
+	    const displayShipments = shipments;
 
 	    const metrics = useMemo(() => {
 	        const total = displayShipments.length;
@@ -93,10 +84,10 @@ const CustomerDashboard = () => {
 	                    </Link>
 	                </div>
                 
-                <div style={{ overflowX: 'auto' }}>
-                    <table className="data-table">
-                        <thead>
-                            <tr>
+	                <div style={{ overflowX: 'auto' }}>
+	                    <table className="data-table">
+	                        <thead>
+	                            <tr>
                                 <th>#</th>
                                 <th>Item</th>
                                 <th>Picture</th>
@@ -106,29 +97,37 @@ const CustomerDashboard = () => {
                                 <th>Weight</th>
                                 <th>Receive date</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {displayShipments.map((shipment, index) => (
-                                <tr key={shipment._id || shipment.id}>
-                                    <td>{index + 1}</td>
-                                    <td>
-                                        <div style={{ color: 'var(--text-secondary)' }}>{shipment.item || shipment.type || 'N/A'}</div>
-                                    </td>
-                                    <td>
-                                        <div style={{ width: '40px', height: '30px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
-                                            <div style={{ width: '100%', height: '100%', background: `linear-gradient(45deg, #e2e8f0, #cbd5e1)` }}></div>
-                                        </div>
-                                    </td>
-                                    <td>{shipment.tracking || shipment.trackingID || 'N/A'}</td>
-                                    <td>{shipment.ctn || '1'}</td>
-                                    <td>{shipment.cbm || '0.02'}</td>
-                                    <td>{shipment.weight || '2'}</td>
-	                                    <td>{shipment.date || (shipment.createdAt ? new Date(shipment.createdAt).toISOString().split('T')[0] : '—')}</td>
+	                        </thead>
+	                        <tbody>
+	                            {displayShipments.length === 0 ? (
+	                                <tr>
+	                                    <td colSpan="8" style={{ padding: '1.5rem', color: 'var(--text-secondary)' }}>
+	                                        No shipments yet.
+	                                    </td>
 	                                </tr>
-	                            ))}
+	                            ) : (
+	                                displayShipments.map((shipment, index) => (
+	                                    <tr key={shipment._id || shipment.id}>
+	                                        <td>{index + 1}</td>
+	                                        <td>
+	                                            <div style={{ color: 'var(--text-secondary)' }}>{shipment.item || shipment.type || 'N/A'}</div>
+	                                        </td>
+	                                        <td>
+	                                            <div style={{ width: '40px', height: '30px', background: 'var(--border-color)', borderRadius: '4px', overflow: 'hidden' }}>
+	                                                <div style={{ width: '100%', height: '100%', background: 'linear-gradient(45deg, #e2e8f0, #cbd5e1)' }}></div>
+	                                            </div>
+	                                        </td>
+	                                        <td>{shipment.tracking || shipment.trackingID || 'N/A'}</td>
+	                                        <td>{shipment.ctn || '1'}</td>
+	                                        <td>{shipment.cbm || '0.02'}</td>
+	                                        <td>{shipment.weight || '2'}</td>
+	                                        <td>{shipment.date || (shipment.createdAt ? new Date(shipment.createdAt).toISOString().split('T')[0] : '—')}</td>
+	                                    </tr>
+	                                ))
+	                            )}
 	                        </tbody>
 	                    </table>
-                </div>
+	                </div>
             </div>
         </div>
     );

@@ -17,52 +17,6 @@ const CustomerShipments = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
 
-  const staticGoods = useMemo(
-    () => ([
-      {
-        id: 'static-4',
-        item: 'Electric Gloves, Bluetooth',
-        pictureUrl: 'https://images.unsplash.com/photo-1585386959984-a41552231693?auto=format&fit=crop&w=120&q=60',
-        tracking: 'YT7594480935810',
-        ctn: 1,
-        cbm: 0.02,
-        weight: 2,
-        receiveDate: '2026-01-03',
-      },
-      {
-        id: 'static-3',
-        item: 'Package',
-        pictureUrl: 'https://images.unsplash.com/photo-1524638067-feba7e8c2aa4?auto=format&fit=crop&w=120&q=60',
-        tracking: 'JT3148269849516',
-        ctn: 1,
-        cbm: 0.02,
-        weight: 1.5,
-        receiveDate: '2025-12-31',
-      },
-      {
-        id: 'static-2',
-        item: 'Bluetooth Headphones',
-        pictureUrl: 'https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?auto=format&fit=crop&w=120&q=60',
-        tracking: '78970184169226',
-        ctn: 1,
-        cbm: 0.02,
-        weight: 2,
-        receiveDate: '2025-12-30',
-      },
-      {
-        id: 'static-1',
-        item: 'N/A',
-        pictureUrl: 'https://images.unsplash.com/photo-1524638067-feba7e8c2aa4?auto=format&fit=crop&w=120&q=60',
-        tracking: '773397554606910',
-        ctn: 1,
-        cbm: 0.04,
-        weight: 3,
-        receiveDate: '2025-12-29',
-      },
-    ]),
-    [],
-  );
-
   const fetchShipments = async () => {
     setError('');
     setLoading(true);
@@ -82,8 +36,7 @@ const CustomerShipments = () => {
   }, []);
 
   const goodsRows = useMemo(() => {
-    const fromApi = Array.isArray(items) && items.length > 0;
-    if (!fromApi) return staticGoods;
+    if (!Array.isArray(items) || items.length === 0) return [];
 
     return items
       .map((s) => {
@@ -106,7 +59,7 @@ const CustomerShipments = () => {
         };
       })
       .sort((a, b) => (b.receiveDate || '').localeCompare(a.receiveDate || ''));
-  }, [items, staticGoods]);
+  }, [items]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -296,4 +249,3 @@ const CustomerShipments = () => {
 };
 
 export default CustomerShipments;
-
